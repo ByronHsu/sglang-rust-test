@@ -3,7 +3,7 @@ from setuptools_rust import Binding, RustExtension
 
 setup(
     name="sglang-rust-test",
-    version="0.1.7",
+    version="0.1.7.1",
     packages=find_packages(where="py_src"),
     package_dir={"": "py_src"},
     rust_extensions=[
