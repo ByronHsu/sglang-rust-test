@@ -21,7 +21,7 @@ classifiers = [
 build-frontend = "build"
 build-verbosity = 1
 
-linux.before-all = "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
+linux.before-all = "yum update && yum install -y openssl-devel && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
 linux.environment = { PATH = "$PATH:$HOME/.cargo/bin" }
 macos.before-all = "rustup target add aarch64-apple-darwin x86_64-apple-darwin"
 
