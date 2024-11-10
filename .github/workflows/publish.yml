@@ -55,6 +55,7 @@ jobs:
   build-sdist:
     name: Build SDist
     runs-on: ubuntu-latest
+    needs: [build]
     steps:
       - uses: actions/checkout@v4
       - uses: PyO3/maturin-action@v1
@@ -83,4 +84,4 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
           pip install twine
-          twine upload dist/*
+          twine upload dist/* --verbose
