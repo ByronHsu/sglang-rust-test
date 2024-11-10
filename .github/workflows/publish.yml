@@ -1,11 +1,9 @@
 # Reference: https://github.com/openai/tiktoken/blob/63527649963def8c759b0f91f2eb69a40934e468/.github/workflows/build_wheels.yml#L1
 
-name: Python Release
+name: Python Release on-demand
 
 on:
-  push:
-    tags:
-      - v*
+  workflow_dispatch:
 
 jobs:
   build:
