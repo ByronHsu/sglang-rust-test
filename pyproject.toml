@@ -15,14 +15,3 @@ classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: 3",
 ]
-
-
-[tool.cibuildwheel]
-build-frontend = "build"
-build-verbosity = 1
-
-# Only build manylinux x86_64 wheels
-build = "*-manylinux_x86_64"
-
-linux.before-all = "yum update && yum install -y openssl-devel && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
-linux.environment = { PATH = "$PATH:$HOME/.cargo/bin" }
