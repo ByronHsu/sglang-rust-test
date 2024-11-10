@@ -29,7 +29,7 @@ class Router:
         cache_threshold: float = 0.50
     ):
 
-        self._router = sglang_router_rs.Router(
+        self._router = _Router(
             worker_urls=worker_urls,
             policy=policy,
             host=host,
