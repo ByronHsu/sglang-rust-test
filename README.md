@@ -1,30 +1,53 @@
 
-- Build rust
+
+## Build rust
 
 ```
 $ cargo build
 ```
 
 
-- Build python binding
+## Build python binding
 
-We want to add wrapper on top of python binding, so we use Setuptools-rust
+1. build wheel first
 
-Maturin v.s. Setuptools-rust
-
-https://www.perplexity.ai/search/maturin-v-s-setuptools-for-rus-XhFJGCPJSOaThpo2X2QtNA#0
-
-
-1. editable install
-
-```
-$ pip install -e .
-```
-
-2. build
-
-```
+```bash
 $ pip install  --index-url="https://pypi.org/simple/" setuptools-rust wheel build
 $ python -m build
 ```
 
+
+2. Once you get the wheel, you can install the wheel by
+
+```bash
+$ pip install <path to wheel>
+```
+
+3. If you want to develop python code in editable mode, you can do 
+
+```bash
+$ pip install -e .
+```
+
+Note that every time you change rust, you have to build the wheel again
+
+
+### Setting up Python Binding and CI
+
+The CI consists of three steps
+
+1. Build wheels
+
+- We use cibuildwheel to build a manylinux x86_64 pkg which can work on major Linux OS (Ubuntu, Centos, etc)
+- To support other OS / architecture, we can add more configs 
+
+Reference: https://cibuildwheel.pypa.io/en/stable/
+
+2. Build source distribution
+
+- Create source distribution which contains raw and unbuilt code
+- This allows `pip` to build pacakge from source if there are no prebuilt wheels
+
+3. Publish to PyPi
+
+The CI setup is refered from https://github.com/openai/tiktoken/blob/63527649963def8c759b0f91f2eb69a40934e468/.github/workflows/build_wheels.yml#L1
