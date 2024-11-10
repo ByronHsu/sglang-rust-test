@@ -27,6 +27,8 @@ jobs:
 
       - name: Install build dependencies
         run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev pkg-config
           python -m pip install -U pip
           python -m pip install build twine auditwheel
 
@@ -38,8 +40,6 @@ jobs:
           CIBW_ARCHS_LINUX: "x86_64"
           CIBW_BEFORE_BUILD: |
             curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-            sudo apt-get update
-            sudo apt-get install -y libssl-dev pkg-config
           CIBW_ENVIRONMENT_LINUX: "PATH=$HOME/.cargo/bin:$PATH"
 
       - name: List built packages
