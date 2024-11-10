@@ -1,3 +1,5 @@
+# Reference: https://github.com/openai/tiktoken/blob/63527649963def8c759b0f91f2eb69a40934e468/.github/workflows/build_wheels.yml#L1
+
 name: Python Release
 
 on:
@@ -27,20 +29,13 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libssl-dev pkg-config
           python -m pip install -U pip
           python -m pip install build twine auditwheel
 
       - name: Build package
-        uses: pypa/cibuildwheel@v2.16.2
+        uses: pypa/cibuildwheel@v2.21.3
         env:
           CIBW_BUILD: "cp39-* cp310-*"
-          CIBW_SKIP: "*-win32 *-manylinux_i686 *-musllinux*"
-          CIBW_ARCHS_LINUX: "x86_64"
-          CIBW_BEFORE_BUILD: |
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          CIBW_ENVIRONMENT_LINUX: "PATH=$HOME/.cargo/bin:$PATH"
 
       - name: List built packages
         run: ls -lh wheelhouse/
