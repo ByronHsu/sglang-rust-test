@@ -38,8 +38,7 @@ jobs:
           CIBW_BUILD: "cp39-manylinux_x86_64 cp310-manylinux_x86_64"
           CIBW_BEFORE_ALL: |
             yum update && yum install -y openssl-devel && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          CIBW_ENVIRONMENT: |
-            PATH = "$PATH:$HOME/.cargo/bin"
+          CIBW_ENVIRONMENT: "PATH=$HOME/.cargo/bin:$PATH"
 
       - name: List built packages
         run: ls -lh wheelhouse/
