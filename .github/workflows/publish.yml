@@ -1,83 +1,86 @@
-name: Build and Publish Python Package
+name: Python Release
 
 on:
   push:
     tags:
-      - 'v*'  # Trigger on version tags
-
-env:
-  CARGO_TERM_COLOR: always
+      - v*
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }} with python == ${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
+  build:
+    name: Build on ${{ matrix.os }} (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}-latest
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        python-version: ['3.10']
+        include:
+          # Linux x86_64 builds
+          - os: ubuntu
+            target: x86_64
+            interpreter: "3.8 3.9 3.10 3.11"
+          # Linux aarch64 builds
+          - os: ubuntu
+            target: aarch64
+            interpreter: "3.8 3.9 3.10 3.11"
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Install Rust
-      uses: dtolnay/rust-toolchain@stable
-    
-    - name: Install build dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install setuptools-rust wheel build twine
-    
-    - name: Build wheel
-      run: python -m build
-    
-    - name: Store wheels
-      uses: actions/upload-artifact@v3
-      with:
-        name: wheels-${{ matrix.os }}-${{ matrix.python-version }}
-        path: dist/*.whl
+      - uses: actions/checkout@v4
 
-  publish:
-    needs: build_wheels
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install twine
+        run: pip install -U twine
+
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          manylinux: auto
+          args: --release --out dist --interpreter ${{ matrix.interpreter }}
+          rust-toolchain: stable
+
+      - name: List wheels
+        run: ls -lh dist/
+
+      - name: Check wheels
+        run: twine check --strict dist/*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}-${{ matrix.target }}
+          path: dist
+
+  build-sdist:
+    name: Build SDist
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-    
-    - name: Download all wheels
-      uses: actions/download-artifact@v3
-      with:
-        path: dist
-    
-    - name: Move wheels to dist
-      run: |
-        mkdir -p final_dist
-        find dist -name "*.whl" -exec mv {} final_dist \;
-  
-    - name: Install build dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install setuptools-rust wheel build twine
-        
-    - name: Build source distribution
-      run: python -m build --sdist
-    
-    - name: Move sdist to final dist
-      run: mv dist/*.tar.gz final_dist/
-    
-    - name: Publish to PyPI
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      run: |
-        python -m twine upload final_dist/*
+      - uses: actions/checkout@v4
+      - uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: --out dist
+          rust-toolchain: stable
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-sdist
+          path: dist
+
+  upload:
+    name: Upload to PyPI
+    needs: [build, build-sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Upload to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          pip install twine
+          twine upload dist/*
