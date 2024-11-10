@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sglang-rust-test"
-version = "0.1.8"
+version = "0.1.9"
 description = "A Python wrapper around Rust HelloWorld"
 authors = [{name = "Your Name", email = "your.email@example.com"}]
 requires-python = ">=3.7"
