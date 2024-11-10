@@ -1,53 +1,53 @@
+# Building Rust with Python Bindings
 
+## Prerequisites
+- Rust and Cargo installed
+- Python with pip installed
 
-## Build rust
+## Build Process
 
-```
-$ cargo build
-```
-
-
-## Build python binding
-
-1. build wheel first
-
+### 1. Build Rust Project
 ```bash
-$ pip install  --index-url="https://pypi.org/simple/" setuptools-rust wheel build
-$ python -m build
+cargo build
 ```
 
+### 2. Build Python Binding
 
-2. Once you get the wheel, you can install the wheel by
-
+#### Option A: Build and Install Wheel
+1. Build the wheel package:
 ```bash
-$ pip install <path to wheel>
+pip install setuptools-rust wheel build
+python -m build
 ```
 
-3. If you want to develop python code in editable mode, you can do 
-
+2. Install the generated wheel:
 ```bash
-$ pip install -e .
+pip install <path-to-wheel>
 ```
 
-Note that every time you change rust, you have to build the wheel again
+#### Option B: Development Mode
+For development purposes, you can install the package in editable mode:
+```bash
+pip install -e .
+```
 
+**Note:** When modifying Rust code, you must rebuild the wheel for changes to take effect.
 
-### Setting up Python Binding and CI
+## CI/CD Setup
 
-The CI consists of three steps
+The continuous integration pipeline consists of three main steps:
 
-1. Build wheels
+### 1. Build Wheels
+- Uses `cibuildwheel` to create manylinux x86_64 packages
+- Compatible with major Linux distributions (Ubuntu, CentOS, etc.)
+- Additional configurations can be added to support other OS/architectures
+- Reference: [cibuildwheel documentation](https://cibuildwheel.pypa.io/en/stable/)
 
-- We use cibuildwheel to build a manylinux x86_64 pkg which can work on major Linux OS (Ubuntu, Centos, etc)
-- To support other OS / architecture, we can add more configs 
+### 2. Build Source Distribution
+- Creates a source distribution containing the raw, unbuilt code
+- Enables `pip` to build the package from source when prebuilt wheels are unavailable
 
-Reference: https://cibuildwheel.pypa.io/en/stable/
+### 3. Publish to PyPI
+- Uploads both wheels and source distribution to PyPI
 
-2. Build source distribution
-
-- Create source distribution which contains raw and unbuilt code
-- This allows `pip` to build pacakge from source if there are no prebuilt wheels
-
-3. Publish to PyPi
-
-The CI setup is refered from https://github.com/openai/tiktoken/blob/63527649963def8c759b0f91f2eb69a40934e468/.github/workflows/build_wheels.yml#L1
+The CI configuration is based on the [tiktoken workflow](https://github.com/openai/tiktoken/blob/63527649963def8c759b0f91f2eb69a40934e468/.github/workflows/build_wheels.yml#L1).
