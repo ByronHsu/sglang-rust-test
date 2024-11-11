@@ -18,6 +18,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        path: sglang-repo
+
+      - name: Move rust folder out and delete sglang-repo
+        run: |
+          mv sglang-repo/rust .
+          rm -rf sglang-repo
+          ls -alt
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -31,7 +38,6 @@ jobs:
 
       - name: Build package
         uses: pypa/cibuildwheel@v2.21.3
-        working-directory: ./rust
         env:
           CIBW_BUILD: "cp38-manylinux_x86_64 cp39-manylinux_x86_64 cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64"
           CIBW_BEFORE_ALL: |
@@ -39,15 +45,12 @@ jobs:
           CIBW_ENVIRONMENT: "PATH=$HOME/.cargo/bin:$PATH"
 
       - name: List built packages
-        working-directory: ./rust
         run: ls -lh wheelhouse/
 
       - name: Check packages
-        working-directory: ./rust
         run: twine check --strict wheelhouse/*
 
       - uses: actions/upload-artifact@v4
-        working-directory: ./rust
         with:
           name: packages-${{ matrix.os }}-${{ matrix.target }}
           path: wheelhouse/
@@ -57,20 +60,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+        path: sglang-repo
+  
+      - name: Move rust folder out and delete sglang-repo
+        run: |
+          mv sglang-repo/rust .
+          rm -rf sglang-repo
+          ls -alt
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           
       - name: Build SDist
-        working-directory: ./rust
         run: |
           pip install build
           python -m build --sdist
 
       - uses: actions/upload-artifact@v4
-        working-directory: ./rust
         with:
           name: sdist
           path: dist/*.tar.gz
