@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
         path: sglang-repo
 
-      - name: Move rust folder out and delete sglang-repo
+      - name: Move rust folder to root and delete sglang-repo
         run: |
           mv sglang-repo/rust .
           rm -rf sglang-repo
@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v4
         path: sglang-repo
   
-      - name: Move rust folder out and delete sglang-repo
+      - name: Move rust folder to root and delete sglang-repo
         run: |
           mv sglang-repo/rust .
           rm -rf sglang-repo
