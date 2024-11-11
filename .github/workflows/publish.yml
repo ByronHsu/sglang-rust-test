@@ -18,7 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        path: sglang-repo
+        with:
+          path: sglang-repo
 
       - name: Move rust folder to root and delete sglang-repo
         run: |
@@ -60,7 +61,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        path: sglang-repo
+        with:
+          path: sglang-repo
   
       - name: Move rust folder to root and delete sglang-repo
         run: |
