@@ -16,11 +16,11 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 
-[tool.setuptools]
-package-dir = {"" = "py_src"}
-packages = {find = {where = ["py_src"]}}
+# https://github.com/PyO3/setuptools-rust?tab=readme-ov-file
+[tool.setuptools.packages]
+find = { where = ["py_src"] }
 
-[tool.setuptools-rust]
-rust-extensions = [
-    {path = "Cargo.toml", binding = "PyO3", debug = false, target = "sglang_router_rs"}
-]
+[[tool.setuptools-rust.ext-modules]]
+target = "sglang_router_rs"
+path = "Cargo.toml"
+binding = "PyO3"
