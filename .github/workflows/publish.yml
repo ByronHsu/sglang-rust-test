@@ -23,7 +23,7 @@ jobs:
 
       - name: Move rust folder to root and delete sglang-repo
         run: |
-          mv sglang-repo/rust .
+          mv sglang-repo/rust/* .
           rm -rf sglang-repo
           ls -alt
 
@@ -66,7 +66,7 @@ jobs:
   
       - name: Move rust folder to root and delete sglang-repo
         run: |
-          mv sglang-repo/rust .
+          mv sglang-repo/rust/* .
           rm -rf sglang-repo
           ls -alt
 
